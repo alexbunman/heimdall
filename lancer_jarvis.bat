@@ -1,5 +1,5 @@
 @echo off
-title Jarvis
+title Heimdall
 rem Lanceur de l'assistant vocal. Se place dans le dossier du projet, recupere
 rem la derniere version si Git est la, puis demarre jarvis14.py via uv. uv est
 rem cherche par chemin absolu pour fonctionner aussi au demarrage de Windows,
@@ -14,5 +14,5 @@ if not defined UV (
 "%UV%" run python jarvis14.py
 :fin
 echo.
-echo Jarvis s'est arrete. Vous pouvez fermer cette fenetre.
+echo Heimdall s'est arrete. Vous pouvez fermer cette fenetre.
 pause

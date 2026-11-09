@@ -4,6 +4,17 @@ Toutes les évolutions notables de Jarvis. Format inspiré de
 [Keep a Changelog](https://keepachangelog.com/fr/) ; versionnage
 [SemVer](https://semver.org/lang/fr/).
 
+## [Non publié] — Heimdall
+
+### Modifié
+- L'assistant se présente sous le nom **Heimdall** : nouvelle personnalité
+  `heimdall` (sobre, factuelle, sans flatterie) par défaut dans
+  `config.example.yaml`, titres des fenêtres `.bat`, HUD, cockpit et panneau.
+- Nouveau lanceur `lancer_heimdall.bat` (appelle `lancer_jarvis.bat`).
+- README : crédit explicite au projet d'origine de sosoj92.
+- Inchangé volontairement : mot d'activation « Hey Jarvis », noms de fichiers
+  et chemins internes (compatibilité avec le projet d'origine).
+
 ## [1.0.0] — 2026-08-07
 
 Première version publique. Assistant vocal local en français, architecture

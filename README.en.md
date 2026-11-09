@@ -1,4 +1,7 @@
-# 🤖 Jarvis — local-first voice assistant
+# 🛡️ Heimdall — local voice assistant
+
+> **Heimdall** is my personal adaptation of [jarvis-assistant-vocal](https://github.com/sosoj92/jarvis-assistant-vocal) by **sosoj92** (MIT license, copyright kept in [LICENSE](LICENSE)).
+> The assistant introduces itself as Heimdall (`heimdall` personality, window titles, HUD). The wake word is still **"Hey Jarvis"** until a "Hey Heimdall" model is trained, and internal files keep the `jarvis` name for compatibility with the original project. Launch with `lancer_heimdall.bat`.
 
 *[Version française](README.md)*
 

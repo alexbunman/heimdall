@@ -1,4 +1,7 @@
-# 🤖 Jarvis — assistant vocal local
+# 🛡️ Heimdall — assistant vocal local
+
+> **Heimdall** est mon adaptation personnelle de [jarvis-assistant-vocal](https://github.com/sosoj92/jarvis-assistant-vocal) de **sosoj92** (licence MIT, copyright conservé dans [LICENSE](LICENSE)).
+> L'assistant se présente sous le nom Heimdall (personnalité `heimdall`, titres des fenêtres, HUD). Le mot d'activation reste **« Hey Jarvis »** tant qu'aucun modèle « Hey Heimdall » n'est entraîné, et les fichiers internes gardent le nom `jarvis` pour rester compatibles avec le projet d'origine. Lancement : `lancer_heimdall.bat`.
 
 *[English version](README.en.md)*
 

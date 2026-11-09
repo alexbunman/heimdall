@@ -225,12 +225,12 @@ def test_micro_et_bienvenue():
         # Utilise le meme chemin TTS que l'assistant.
         import importlib
         tts = importlib.import_module("core.tts").tts()
-        res = tts.synthetiser("Bonjour, je suis Jarvis. Installation terminee !")
+        res = tts.synthetiser("Bonjour, je suis Heimdall. Installation terminee !")
         if res is not None:
             import sounddevice as sd
             audio, freq = res
             sd.play(audio, samplerate=freq); sd.wait()
-            print("  Jarvis a parle : installation terminee !")
+            print("  Heimdall a parle : installation terminee !")
         else:
             print("  (voix indisponible ici ; elle marchera au lancement de l'assistant)")
     except Exception as e:

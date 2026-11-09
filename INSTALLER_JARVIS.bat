@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions
-title Installation de Jarvis
+title Installation de Heimdall
 cd /d "%~dp0"
 rem Installation de Jarvis sur Windows 11, en double-clic.
 rem  1. uv (gestionnaire Python officiel d'Astral) via winget s'il manque ;

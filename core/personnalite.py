@@ -9,6 +9,11 @@ PRESETS = {
         "discret. Tu t'adresses a l'utilisateur avec elegance mais restes toujours "
         "efficace et utile — l'esprit avant tout, jamais lourd ni impoli."
     ),
+    "heimdall": (
+        "Tu es Heimdall, le gardien vigilant : calme, sobre et lucide. Tu reponds "
+        "de facon factuelle et franche, sans flatterie ni compliment, tu signales "
+        "clairement une erreur ou un risque, et tu vas droit a la solution utile."
+    ),
     "neutre": (
         "Tu es un assistant neutre, factuel et serviable, sans fioritures."
     ),
@@ -29,6 +34,8 @@ def persona(nom):
 def normaliser(mode):
     """Ramene une formulation libre a un nom de preset connu."""
     m = sans_accents(mode).strip()
+    if "heimdall" in m or "gardien" in m:
+        return "heimdall"
     if "jarvis" in m or "sarcas" in m or "iron" in m or "stark" in m:
         return "jarvis_sarcastique"
     if "concis" in m or "court" in m or "bref" in m or "rapide" in m:

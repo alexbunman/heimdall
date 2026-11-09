@@ -1,5 +1,5 @@
 @echo off
-title Sauvegarder Jarvis
+title Sauvegarder Heimdall
 rem Envoie tes dernieres modifications sur GitHub en un clic :
 rem ajoute tout, cree un commit date, puis pousse. Les fichiers sensibles
 rem (config.yaml, .env, memoire.json, notes/, voix/...) restent exclus via

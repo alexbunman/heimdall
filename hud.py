@@ -40,7 +40,7 @@ from pathlib import Path
 PORT = 8770
 _FICHIER_HTML = Path(__file__).parent / "hud.html"
 # <title> de hud.html : sert a retrouver la fenetre du HUD parmi les autres.
-TITRE_FENETRE = "JARVIS · Reacteur arc"
+TITRE_FENETRE = "HEIMDALL · Veille"
 # Une fenetre fermee n'est rouverte qu'une fois par minute au plus.
 _DELAI_REOUVERTURE = 60.0
 # Secondes entre deux battements du flux (et verifications de version de la page).
@@ -368,13 +368,13 @@ def _tester_voix():
         # pas ici : on propose plutot un test a la voix depuis ce poste.
         return {"ok": False, "message": (
             "Aucune voix dans ce processus : le test vocal n'est pas disponible depuis "
-            "ce HUD. Pour l'entendre ici, dis simplement « Jarvis, dis bonjour ».")}
+            "ce HUD. Pour l'entendre ici, dis simplement « Hey Jarvis, dis bonjour ».")}
     if not _TEST_VOIX.acquire(blocking=False):
         return {"ok": False, "message": "Un test vocal est deja en cours."}
 
     def _jouer():
         try:
-            voix.parler("Test de la voix Jarvis. Tout fonctionne.")
+            voix.parler("Test de la voix Heimdall. Tout fonctionne.")
         except Exception as e:
             print(f"[hud] test vocal en echec : {type(e).__name__}")
         finally:

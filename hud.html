@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS · Reacteur arc</title>
+<title>HEIMDALL · Veille</title>
 <meta name="jarvis-version" content="__VERSION_PAGE__">
 <style>
   :root {
@@ -1144,7 +1144,7 @@ function rendreVedette(items, parId) {
     }
   } else {
     // Rien d'annonce : la banniere reste calme et dit pourquoi.
-    sur.append(icone("tableau"), document.createTextNode("Jarvis"));
+    sur.append(icone("tableau"), document.createTextNode("Heimdall"));
     t = "Rien à l'horizon";
     const sources = [parId.loopstr, parId.agenda].filter(Boolean);
     const lisible = sources.some((x) => x.etat === "ok" || x.etat === "vide");
@@ -1781,7 +1781,7 @@ function appliquer(ev) {
       ajouterLigne(`<span class="qui">Vous</span>${echap(ev.texte)}`, "vous");
       break;
     case "jarvis":
-      ajouterLigne(`<span class="qui">Jarvis</span>${echap(ev.texte)}`, "jarvis");
+      ajouterLigne(`<span class="qui">Heimdall</span>${echap(ev.texte)}`, "jarvis");
       break;
     case "outil":
       ajouterLigne(

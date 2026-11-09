@@ -1,5 +1,5 @@
 @echo off
-title Mise a jour de Jarvis
+title Mise a jour de Heimdall
 rem Met a jour les bibliotheques Python du projet vers leurs dernieres
 rem versions compatibles, puis synchronise l'environnement. A lancer
 rem quand on le souhaite (pas a chaque demarrage : une nouvelle version
