@@ -1,0 +1,184 @@
+{
+  "name": "Famille - Traitement basset (lab)",
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "INBOX",
+        "postProcessAction": "nothing",
+        "format": "simple",
+        "options": {
+          "customEmailConfig": "[\"ALL\", [\"SINCE\", \"November 26, 2026\"]]",
+          "trackLastMessageId": true
+        }
+      },
+      "id": "6b311ab4-a441-4fe9-bd03-8c6b00e8f3df",
+      "name": "Nouveau mail dans le lab",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "imap": {
+          "id": "",
+          "name": "A_CHOISIR_DANS_N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const out = [];\nfor (const it of $input.all()) {\n  const j = it.json;\n  const sujet = String(j.subject || '');\n  const de = String(typeof j.from === 'object' ? JSON.stringify(j.from) : (j.from || '')).toLowerCase();\n  let source = null;\n  if (sujet.includes('[BASSET]')) source = 'veille';\n  else if (de.includes('chien.com') || de.includes('secondechance')) source = 'alerte';\n  else if (de.includes('adoption.cso') || de.includes('presidentecso') || /coeur sous l.oreille/i.test(sujet)) source = 'association';\n  else if (/basset/i.test(sujet)) source = 'autre';\n  if (!source) continue;\n  let texte = String(j.textPlain || '');\n  if (!texte && j.textHtml) texte = String(j.textHtml).replace(/<a[^>]*href=\"([^\"]+)\"[^>]*>/gi, ' $1 ').replace(/<[^>]*>/g, ' ');\n  texte = texte.replace(/\\s+/g, ' ').trim().slice(0, 6000);\n  out.push({ json: { source, sujet, de, texte } });\n}\nreturn out;"
+      },
+      "id": "3676938c-b5d2-42b0-8b90-a0ea51c56776",
+      "name": "Garder les mails basset",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Réponds en français. Tu aides une famille près de Caen (Calvados) qui veut adopter un basset hound MÂLE ADULTE, compatible avec une femelle basset stérilisée de 4 ans et un enfant de 13 ans, en appartement en rez-de-chaussée.\n\nType de mail : {{ $json.source }}\nSujet : {{ $json.sujet }}\nContenu : {{ $json.texte }}\n\nRÈGLES :\n1. N'invente rien. Si une information manque, écris \"non précisé\".\n2. Garde uniquement les annonces de chiens MÂLES, ADULTES (pas de chiots), de race basset hound ou croisé basset.\n3. Recopie les liens exactement tels qu'ils apparaissent dans le contenu. Si aucun lien, écris \"\".\n4. Pour le département, donne le numéro (ex. 14, 27, 75) ou \"\" si inconnu ou hors de France ; indique le pays.\n5. Si le mail vient de l'association, résume-le en 3 lignes maximum et liste les questions ou demandes qu'elle pose. Ne rédige AUCUNE réponse.\n6. N'utilise jamais de guillemets doubles à l'intérieur des textes.\n\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte autour :\n{\n  \"pertinent\": true,\n  \"resume\": \"2 lignes max\",\n  \"annonces\": [ { \"nom\": \"\", \"age\": \"\", \"lieu\": \"\", \"departement\": \"\", \"pays\": \"\", \"refuge\": \"\", \"lien\": \"\", \"compatibilite\": \"chiens, enfants, chats si précisé\" } ],\n  \"questions_association\": [],\n  \"action_suggeree\": \"une phrase\"\n}",
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 1500
+        }
+      },
+      "id": "90e82141-f550-4e03-868d-6dfb172c4b25",
+      "name": "Analyse Mistral",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "mistral-small-latest",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "id": "ae8696da-715e-4610-9fac-b4a28e13de0e",
+      "name": "Mistral",
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        440,
+        220
+      ],
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "",
+          "name": "A_CHOISIR_DANS_N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const proches = ['14','50','61','27','76','35','53','72','28','78','95','60','80'];\nconst esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');\nconst sources = $('Garder les mails basset').all();\nlet blocs = []; let nbAnnonces = 0; let assoc = false;\n$input.all().forEach((it, i) => {\n  const src = sources[i] ? sources[i].json : {};\n  let brut = String(it.json.text || '').replace(/```json|```/g, '').trim();\n  let r;\n  try { r = JSON.parse(brut); } catch (e) { r = { pertinent: true, resume: brut.slice(0, 800), annonces: [], questions_association: [], action_suggeree: 'Réponse non structurée : relis le mail d origine dans le lab.' }; }\n  if (src.source === 'association') assoc = true;\n  if (!r.pertinent && src.source !== 'association') return;\n  const annonces = (r.annonces || []).map(a => ({ ...a, proche: proches.includes(String(a.departement || '').trim()) }))\n    .sort((a, b) => (b.proche - a.proche));\n  nbAnnonces += annonces.length;\n  let h = '<h3>' + (src.source === 'association' ? 'Message de l association' : 'Source : ' + esc(src.source)) + '</h3>';\n  h += '<p><b>' + esc(src.sujet) + '</b><br>' + esc(r.resume) + '</p>';\n  if (annonces.length) h += '<ul>' + annonces.map(a => '<li>' + (a.proche ? '📍 <b>Proche</b> – ' : '') + '<b>' + esc(a.nom) + '</b>, ' + esc(a.age) + ' – ' + esc(a.lieu) + ' ' + (a.departement ? '(' + esc(a.departement) + ')' : '') + ' ' + esc(a.pays) + '<br>Refuge : ' + esc(a.refuge) + ' – Compatibilité : ' + esc(a.compatibilite) + (a.lien ? '<br><a href=\"' + String(a.lien).replace(/\"/g, '%22') + '\">Voir l annonce</a>' : '') + '</li>').join('') + '</ul>';\n  if ((r.questions_association || []).length) h += '<p><b>Questions posées :</b></p><ul>' + r.questions_association.map(q => '<li>' + esc(q) + '</li>').join('') + '</ul><p><i>Aucune réponse n a été envoyée : c est à toi de répondre.</i></p>';\n  if (r.action_suggeree) h += '<p>➡️ ' + esc(r.action_suggeree) + '</p>';\n  blocs.push(h);\n});\nif (!blocs.length) return [];\nconst sujet = assoc ? 'Basset : réponse de l association' : 'Basset : ' + nbAnnonces + ' mâle(s) à regarder';\nconst html = '<h2>Adoption basset</h2>' + blocs.join('<hr>') + '<p style=\"color:#888;font-size:12px\">Tri automatique (Mistral). Vérifie toujours l annonce d origine.</p>';\nreturn [{ json: { sujet, html } }];"
+      },
+      "id": "ab2af305-3c8d-4414-bc35-ba0384bd437c",
+      "name": "Mettre en forme",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "EXPEDITEUR_A_REMPLIR",
+        "toEmail": "DESTINATAIRES_A_REMPLIR",
+        "subject": "={{ $json.sujet }}",
+        "html": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bc5201eb-4fe3-4636-8427-2165afec5615",
+      "name": "Mail aux deux adresses",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        0
+      ],
+      "webhookId": "081a1be4-9682-48d6-9ce6-e5d9a024fa1d",
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "A_CHOISIR_DANS_N8N"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Nouveau mail dans le lab": {
+      "main": [
+        [
+          {
+            "node": "Garder les mails basset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Garder les mails basset": {
+      "main": [
+        [
+          {
+            "node": "Analyse Mistral",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyse Mistral",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Mistral": {
+      "main": [
+        [
+          {
+            "node": "Mettre en forme",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mettre en forme": {
+      "main": [
+        [
+          {
+            "node": "Mail aux deux adresses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris"
+  },
+  "pinData": {}
+}

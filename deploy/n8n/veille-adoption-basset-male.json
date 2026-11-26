@@ -1,5 +1,5 @@
 {
-  "name": "Famille - Veille adoption basset male",
+  "name": "Famille - Veille adoption basset male (vers lab)",
   "nodes": [
     {
       "parameters": {
@@ -98,7 +98,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const state = $getWorkflowStaticData('global');\nstate.seen = state.seen || [];\nconst premierPassage = state.seen.length === 0 && !state.assoHash;\nconst strip = (s) => (s || '').replace(/<[^>]*>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, \"'\").replace(/\\s+/g, ' ').trim();\n\nconst html = String($('Tailharbor - bassets').first().json.data || '');\nconst re = /<a\\b([^>]*?)href=\"(\\/fr\\/animaux\\/[^\"]+)\"([^>]*)>([\\s\\S]*?)<\\/a>/gi;\nconst parLien = {};\nlet m;\nwhile ((m = re.exec(html)) !== null) {\n  const href = m[2];\n  const attrs = m[1] + ' ' + m[3] + ' ' + m[4];\n  const alts = [...attrs.matchAll(/(?:alt|title|aria-label)=\"([^\"]*)\"/gi)].map(x => x[1]);\n  const texte = (strip(m[4]) + ' ' + alts.join(' ')).trim();\n  parLien[href] = ((parLien[href] || '') + ' ' + texte).trim();\n}\n\nconst nouveaux = [];\nfor (const [href, texte] of Object.entries(parLien)) {\n  const t = texte.toLowerCase();\n  const estBasset = t.includes('basset') || href.includes('basset');\n  const estMale = /\\bmale\\b|\\bmâle\\b/.test(t) && !/female|femelle/.test(t);\n  const estChiot = /puppy|chiot/.test(t);\n  if (!estBasset || !estMale || estChiot) continue;\n  if (state.seen.includes(href)) continue;\n  state.seen.push(href);\n  nouveaux.push({ titre: texte.slice(0, 200), lien: 'https://tailharbor.eu' + href });\n}\nstate.seen = state.seen.slice(-500);\n\nconst assoHtml = String($('Un coeur sous l oreille - page adoption').first().json.data || '');\nconst assoTexte = strip(assoHtml.replace(/<script[\\s\\S]*?<\\/script>|<style[\\s\\S]*?<\\/style>/gi, ''));\nlet h = 0;\nfor (let i = 0; i < assoTexte.length; i++) { h = ((h << 5) - h + assoTexte.charCodeAt(i)) | 0; }\nconst assoHash = String(h);\nconst assoChange = assoTexte.length > 0 && !!state.assoHash && state.assoHash !== assoHash;\nif (assoTexte.length > 0) state.assoHash = assoHash;\n\nconst liste = (arr) => '<ul>' + arr.map(n => '<li><a href=\"' + n.lien + '\">' + n.titre + '</a></li>').join('') + '</ul>';\n\nif (premierPassage) {\n  return [{ json: { envoyer: true, sujet: 'Veille basset : démarrage', html: '<p>La veille est en place. ' + nouveaux.length + ' annonce(s) de mâles déjà en ligne ont été mémorisées :</p>' + liste(nouveaux) + '<p>Ensuite, un mail seulement s il y a du nouveau.</p>' } }];\n}\n\nconst envoyer = nouveaux.length > 0 || assoChange;\nlet corps = '';\nif (nouveaux.length) corps += '<h3>Nouveaux bassets mâles à adopter (' + nouveaux.length + ')</h3>' + liste(nouveaux) + '<p><i>Vérifie la localisation : Tailharbor liste aussi des refuges hors de France.</i></p>';\nif (assoChange) corps += '<h3>La page adoption de Un coeur sous l oreille a changé</h3><p><a href=\"https://www.un-coeur-sous-loreille.org/sauvetage.html\">Voir la page</a> (pense aussi à leur groupe Facebook).</p>';\nreturn [{ json: { envoyer, sujet: 'Veille basset : ' + (nouveaux.length ? nouveaux.length + ' nouveau(x) mâle(s)' : 'page association modifiée'), html: corps } }];"
+        "jsCode": "const state = $getWorkflowStaticData('global');\nstate.seen = state.seen || [];\nconst premierPassage = state.seen.length === 0 && !state.assoHash;\nconst strip = (s) => (s || '').replace(/<[^>]*>/g, ' ').replace(/&amp;/g, '&').replace(/&#x27;|&#39;/g, \"'\").replace(/\\s+/g, ' ').trim();\n\nconst html = String($('Tailharbor - bassets').first().json.data || '');\nconst re = /<a\\b([^>]*?)href=\"(\\/fr\\/animaux\\/[^\"]+)\"([^>]*)>([\\s\\S]*?)<\\/a>/gi;\nconst parLien = {};\nlet m;\nwhile ((m = re.exec(html)) !== null) {\n  const href = m[2];\n  const attrs = m[1] + ' ' + m[3] + ' ' + m[4];\n  const alts = [...attrs.matchAll(/(?:alt|title|aria-label)=\"([^\"]*)\"/gi)].map(x => x[1]);\n  const texte = (strip(m[4]) + ' ' + alts.join(' ')).trim();\n  parLien[href] = ((parLien[href] || '') + ' ' + texte).trim();\n}\n\nconst nouveaux = [];\nfor (const [href, texte] of Object.entries(parLien)) {\n  const t = texte.toLowerCase();\n  const estBasset = t.includes('basset') || href.includes('basset');\n  const estMale = /\\bmale\\b|\\bmâle\\b/.test(t) && !/female|femelle/.test(t);\n  const estChiot = /puppy|chiot/.test(t);\n  if (!estBasset || !estMale || estChiot) continue;\n  if (state.seen.includes(href)) continue;\n  state.seen.push(href);\n  nouveaux.push({ titre: texte.slice(0, 200), lien: 'https://tailharbor.eu' + href });\n}\nstate.seen = state.seen.slice(-500);\n\nconst assoHtml = String($('Un coeur sous l oreille - page adoption').first().json.data || '');\nconst assoTexte = strip(assoHtml.replace(/<script[\\s\\S]*?<\\/script>|<style[\\s\\S]*?<\\/style>/gi, ''));\nlet h = 0;\nfor (let i = 0; i < assoTexte.length; i++) { h = ((h << 5) - h + assoTexte.charCodeAt(i)) | 0; }\nconst assoHash = String(h);\nconst assoChange = assoTexte.length > 0 && !!state.assoHash && state.assoHash !== assoHash;\nif (assoTexte.length > 0) state.assoHash = assoHash;\n\nconst liste = (arr) => '<ul>' + arr.map(n => '<li><a href=\"' + n.lien + '\">' + n.titre + '</a></li>').join('') + '</ul>';\n\nif (premierPassage) {\n  return [{ json: { envoyer: true, sujet: '[BASSET] Veille : démarrage', html: '<p>La veille est en place. ' + nouveaux.length + ' annonce(s) de mâles déjà en ligne ont été mémorisées :</p>' + liste(nouveaux) + '<p>Ensuite, un mail seulement s il y a du nouveau.</p>' } }];\n}\n\nconst envoyer = nouveaux.length > 0 || assoChange;\nlet corps = '';\nif (nouveaux.length) corps += '<h3>Nouveaux bassets mâles à adopter (' + nouveaux.length + ')</h3>' + liste(nouveaux) + '<p><i>Vérifie la localisation : Tailharbor liste aussi des refuges hors de France.</i></p>';\nif (assoChange) corps += '<h3>La page adoption de Un coeur sous l oreille a changé</h3><p><a href=\"https://www.un-coeur-sous-loreille.org/sauvetage.html\">Voir la page</a> (pense aussi à leur groupe Facebook).</p>';\nreturn [{ json: { envoyer, sujet: '[BASSET] Veille : ' + (nouveaux.length ? nouveaux.length + ' nouveau(x) mâle(s)' : 'page association modifiée'), html: corps } }];"
       },
       "id": "87971fce-ff9f-43c3-ab3c-0358d7cf9a99",
       "name": "Nouveaux bassets males + changement asso",
@@ -145,7 +145,7 @@
     {
       "parameters": {
         "fromEmail": "EXPEDITEUR_A_REMPLIR",
-        "toEmail": "DESTINATAIRE_A_REMPLIR",
+        "toEmail": "ADRESSE_LAB_A_REMPLIR",
         "subject": "={{ $json.sujet }}",
         "html": "={{ $json.html }}",
         "options": {
@@ -153,7 +153,7 @@
         }
       },
       "id": "8bf368a2-c36c-48e5-819b-16ebe8050a48",
-      "name": "Mail recap",
+      "name": "Envoi vers le lab",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
@@ -218,7 +218,7 @@
       "main": [
         [
           {
-            "node": "Mail recap",
+            "node": "Envoi vers le lab",
             "type": "main",
             "index": 0
           }
